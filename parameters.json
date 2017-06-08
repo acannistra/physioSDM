@@ -1,0 +1,6 @@
+{
+    "species" : ["sceloporus occidentalis"],
+    "occdata" : ["/Users/tony/Dropbox/Projects/UW/sdmpriors_py/data/occs/sceloporus_occidentalis_westus.csv"],
+    "bbox": [-124.497327, 31.016666999999998, -105.00700000000001, 48.335399999063327],
+    "time_periods" : ["1900:1939", "1970:2009"]
+}
