@@ -27,6 +27,7 @@ parser.add_argument("--timescale", help="Resolution of climate data to use.",
 parser.add_argument("--pandas_query", help="provide a pandas query expression"
                     " to apply to the data prior to adding climate.", 
                     nargs=1)
+parser.add_argument("--outsuffix", help="add suffix to outfile name.")
 args = parser.parse_args()
 
 #---------------------
@@ -34,6 +35,7 @@ args = parser.parse_args()
 
 pointdata = pd.read_csv(args.pointfile, sep=args.sep)
 print("Points: %d"%len(pointdata))
+print("Columns: %s"%pointdata.columns)
 
 if(args.pandas_query):
     args.pandas_query = args.pandas_query[0]
@@ -60,7 +62,7 @@ elif(args.timescale == 'month'):
                                         args.prism_loc)
             group[args.prismvar] = list(chain(*climate))
         except FileNotFoundError as e:
-            print(e + " appending NaNs.")
+            print(str(e) + " appending NaNs.")
             group[args.prismvar] = np.nan
 
         points_with_climate  = points_with_climate.append(group)
@@ -72,8 +74,14 @@ else:
     raise Exception("Should ne'er be here!")
 
 ## -----
-outfile = "%s.%s.csv"%(os.path.splitext(args.pointfile)[0],
-                       args.prismvar)
+if (not args.outsuffix):
+    outfile = "%s.%s.csv"%(os.path.splitext(args.pointfile)[0],
+                           args.prismvar)
+else:
+    outfile = "%s.%s_%s.csv"%(os.path.splitext(args.pointfile)[0],
+                              args.prismvar, args.outsuffix)
 
 
-points_with_climate.to_csv(outfile)
+
+
+points_with_climate.to_csv(outfile, sep=args.sep)
