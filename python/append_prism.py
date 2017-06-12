@@ -1,8 +1,9 @@
 import pandas as pd
-import numpy
+import numpy as np
 import geopandas as gpd
 import argparse
 import os
+import pyprind
 from itertools import chain
 from prism_utils import get_prism_climate
 
@@ -44,6 +45,9 @@ if(args.pandas_query):
     nrows_after = nrows_before-len(pointdata)
     print("Removed %d rows with query %s" %(nrows_after, args.pandas_query))
 
+if len(pointdata) == 0:
+    print("No points to search!")
+    exit(1)
 
 points_with_climate = pd.DataFrame()
 
@@ -51,6 +55,7 @@ if(args.timescale == 'day'):
     raise NotImplementedError("Day is not implemented yet. ")
 elif(args.timescale == 'month'):
     groups = pointdata.groupby(['year', 'month'])
+    pbar = pyprind.ProgBar(len(groups), bar_char='#')
     for name, group in groups:
         year, month = int(name[0]), int(name[1])
         group = pd.DataFrame(group)
@@ -66,6 +71,7 @@ elif(args.timescale == 'month'):
             group[args.prismvar] = np.nan
 
         points_with_climate  = points_with_climate.append(group)
+        pbar.update()
 
 
 elif(args.timescale == 'year'):
@@ -84,4 +90,4 @@ else:
 
 
 
-points_with_climate.to_csv(outfile, sep=args.sep)
+points_with_climate.to_csv(outfile, sep=args.sep, index=False)
