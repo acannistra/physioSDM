@@ -12,7 +12,6 @@ suppressPackageStartupMessages({
 ####
 GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=100000) {
   flog.info("searching GBIF for occurrences for species %s....", taxon)
-  num_occs = occ_search
   if (is.na(minyear) & is.na(maxyear)) {
     occs = occ_search(scientificName = taxon, hasCoordinate = T, limit = 100000)
   } 
@@ -22,7 +21,9 @@ GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=100000) {
                       limit = limit,
                       eventDate = paste(minyear, maxyear, sep = ','))
   }
-  flog.info("found %d occurrences.", nrow(occs$data))
+  if (is.null(occs$meta$count)){
+    return(NULL)
+  }
   return(occs$data)
 }
 
@@ -30,10 +31,11 @@ GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=100000) {
 #### Absence Generation
 ####
 
-generateCircleAbsences <- function(occurrences, radius, count, latCol='decimallatitude', lonCol='decimallongitude'){
+generateCircleAbsences <- function(occurrences, radius, count, latCol='decimalLatitude', lonCol='decimalLongitude'){
   circles = circles(occurrences[,c(lonCol, latCol)], d=radius, lonlat=T)
   pseudoabs = spsample(circles@polygons, count, type='random', iter=100)
-  return(pseudoabs@coords)
+  colnames(pseudoabs@coords) <- c(lonCol, latCol)
+  return(as.data.frame(pseudoabs@coords))
 }
 
 generateRandomAbsences_bbox <- function(bbox, count){
