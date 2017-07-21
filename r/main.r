@@ -6,6 +6,7 @@ suppressPackageStartupMessages({
   library(futile.logger)
   library(jsonlite)
   library(dplyr)
+  library(snow)
   source('occurrences.R') ## for GBIFOccurrences and absence generation code.
   source("climate.R") ## for worldclim extraction code. 
   source("sdm.R") ## for gaussian process SDM code + helper functions.
@@ -63,8 +64,9 @@ speciesExperiment = function(speciesData){
   if(is.null(thesePres)){
     flog.warn("No occurrences from GBIF for this species! Aborting experiment and continuing.")
     flog.info("*********species %s complete**********", speciesData[c('species_name')])
-    
     return(NULL)
+  } else{
+    flog.info("found %d occurrences.", nrow(thesePres))
   }
   ## set up plotting parameters:
   plotrows = ceiling(length(PARAMS$biovars) / 3)
@@ -88,26 +90,21 @@ speciesExperiment = function(speciesData){
   
   
   ## get training/test set (maybe)
-  flog.warn("training/test separation NOT IMPLEMENTED")
+  split = trainTestSplit(all_with_clim, trainFraction=PARAMS$train_fraction)
+  flog.info("Witholding %.2f%% of the data for training (%d occurrences)", 100*PARAMS$train_fraction, nrow(split$train))
   
   ## train model without prior
-  model_noprior = buildSDM(all_with_clim, opt=T)
+  model_noprior = buildSDM(split$train, opt=T)
   par(mfrow=c(plotrows, plotcols))
   if(PARAMS$plotting) plot(model_noprior, data=F, jitter=0) ## TODO: There's something wrong with plotting, rugs dont work
-
   
   ## develop prior
   tmin = as.numeric(speciesData[c('tmin')])
   tmax = as.numeric(speciesData[c('tmax')])
-  print(typeof(tmin))
   prior = buildPrior('sigmoid', tminEnvCol = 'bio1', tmaxEnvCol = 'bio1', speciesData)
 
-  
-  
   ## train model with prior
-  
-  
-  model_withprior = buildSDM(all_with_clim, prior = prior, opt=T)
+  model_withprior = buildSDM(split$train, prior = prior, opt=T)
   plot.new()
   par(mfrow=c(plotrows, plotcols))
   if(PARAMS$plotting) plot(model_withprior, data=T, prior=T)
@@ -119,4 +116,6 @@ speciesExperiment = function(speciesData){
   return("not implemented")
 }
 
-apply(all_species, 1, speciesExperiment)
+### Run Experiment on All Species.
+ans = apply(all_species, 1, speciesExperiment)
+str(ans)

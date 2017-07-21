@@ -8,5 +8,6 @@
     "biovars" : ["bio1", "bio5", "bio6", "bio7", "bio14"],
     "phys_datafile" : "/Users/tony/Dropbox/Projects/UW/physdm/data/physiology/Sundayetal_thermallimits_PNAS_2014.csv",
     "min_occurrence_threshold" : 100, //minimum number of GBIF occurrences necessary to build model.,
-    "plotting" : false
+    "train_fraction" : 0.75,
+    "plotting" : true
 }
