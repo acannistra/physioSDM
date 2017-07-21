@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*checkpoint.ipynb
+*Untitled*
+data/occs
+!data/occs/.gitkeep
+data/climate
+!data/climate/.gitkeep
+data/physiology
+!data/physiology/.gitkeep
+
