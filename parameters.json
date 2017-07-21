@@ -1,10 +1,12 @@
+// Parameter file for main.R program, defining 
+// variables useful in experimentation. See documentation. 
 {
-    "species" : ["sceloporus occidentalis", "some species", "another species"],
-    "occdata" : ["/Users/tony/Dropbox/Projects/UW/physdm/data/occs/sceloporus_occidentalis_westus.csv"],
-    "bbox": [-124.497327, 31.016666999999998, -105.00700000000001, 48.335399999063327],
-    "time_periods" : ["1900:1939", "1970:2009"],
+    "species" : ["sceloporus occidentalis", "liolaemus scapularis"], //list of specific species or "all"
+    "time_periods" : ["1970:2009"], //past first, then future. 
     "bioclim_source" : "worldclim",
-    "bioclim_dir" : ["/Users/tony/Dropbox/Projects/UW/physdm/data/climate/worldclim/wc2.0_2.5m_bio/"],
-    "biovars" : [1,2,3,4,5,6,7],
-    "phys_datafile" : "/Users/tony/Dropbox/Projects/UW/physdm/data/physiology/Sundayetal_thermallimits_PNAS_2014.csv"
+    "bioclim_dir" : "/Volumes/Tony Cannistra 4017930916/climate/worldclim/wc2.0_2.5m_bio/",
+    "biovars" : ["bio1", "bio5", "bio6", "bio7", "bio14"],
+    "phys_datafile" : "/Users/tony/Dropbox/Projects/UW/physdm/data/physiology/Sundayetal_thermallimits_PNAS_2014.csv",
+    "min_occurrence_threshold" : 100, //minimum number of GBIF occurrences necessary to build model.,
+    "plotting" : false
 }
