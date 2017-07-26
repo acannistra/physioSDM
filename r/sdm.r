@@ -36,14 +36,40 @@ buildSDM <- function(climPresAbs, opt=F, prior=NULL){
   return(model)
 }
 
+buildMaxEnt <-function(climPresAbs){
+  labels = climPresAbs$presence
+  covs   = dplyr::select(climPresAbs, -c(presence))
+  return(maxent(covs, labels))
+}
+
 ####
 #### training and testing utilities
 ####
-
 trainTestSplit <- function(occurrences, trainFraction=0.75){
   split = list()
   indices = createDataPartition(1:nrow(occurrences), p=trainFraction)$Resample1
   split$train = occurrences[indices,]
   split$test  = occurrences[-indices,]
   return(split) 
+}
+
+####
+#### Model Evaluation Functions
+####
+
+graf_auc_roc = function(model, test_covs, test_labels){
+  results = list()
+  prob = data.frame(predict(model, test_covs))
+  prob = prob$posterior.mode
+  pred = prediction(prob, test_labels)
+  auc  = performance(pred, measure='auc')
+  auc = auc@y.values[[1]]
+  results$auc = auc
+  roc = performance(pred, measure='tpr', x.measure='fpr')
+  results$roc = roc
+  return(results)
+}
+
+maxent_auc_roc = function(model, test_covs, test_labels){
+  
 }

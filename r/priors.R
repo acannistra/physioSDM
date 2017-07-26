@@ -22,40 +22,55 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
   tmin = as.numeric(physioData[c('tmin')])
   tmax = as.numeric(physioData[c('tmax')])
   
-  #flog.info("building prior of type %s with tmin:%f and tmax:%f", type, tmin, tmax)
+  flog.info("building prior of type %s with tmin:%f (type: %s) and tmax:%f (type: %s)", type,
+            tmin, physioData[c('tmin_metric')],
+            tmax, physioData[c('tmax_metric')])
+  flog.warn("only using critical thermal threshold data.")
   if(type == 'sigmoid'){
     if(!is.na(tmin) && !is.na(tmax) && physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ##only use crit
       ## we've got both tmin and tmax
+      flog.info("\tBoth tmin and tmax present.")
       return(partial(sigmoid.neutralZone, 
                      tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol, 
                      neutralMin=tmin, neutralMax=tmax))
-    } else if (!is.na(tmin) && is.na(tmax) && physioData[c('tmin_metric')] == 'crit'){
+    } else if (is.na(tmax) || (!is.na(tmin) && physioData[c('tmin_metric')] == 'crit')){
+      flog.info("\tOnly tmin present.")
       ## we've got tmin but no tmax
       return(partial(sigmoid.tmin,
                      tminEnvCol=tminEnvCol,
                      tmin=tmin))
-    } else if (is.na(tmin) && !is.na(tmax) && physioData[c('tmax_metric')] == 'crit'){
+    } else if (is.na(tmin) || (!is.na(tmax) && physioData[c('tmax_metric')] == 'crit')){
       ## we've got tmax but no tmin
+      flog.info("\tOnly tmax present.")
       return(partial(sigmoid.tmax,
                      tmaxEnvCol=tmaxEnvCol,
                      tmax=tmax))
+    } else {
+      stop(flog.error("prior type %s not supported or only lethal physiology data available.", type))
     }
   } else if (type == 'thresh') {
-    if(!is.na(tmin) && !is.na(tmax)){ ##only use crit
+    if(!is.na(tmin) && !is.na(tmax) && physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ##only use crit
       ## we've got both tmin and tmax
+      flog.info("\tBoth tmin and tmax present.")
+      
       return(partial(thresh.plateau,
                      tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol,
                      tmin=tmin, tmax=tmax))
-    } else if (!is.na(tmin) && is.na(tmax) && physioData[c('tmin_metric')] == 'crit'){
+    } else if (is.na(tmax) || (!is.na(tmin) && physioData[c('tmin_metric')] == 'crit')){
       ## we've got tmin but no tmax
+      flog.info("\tOnly tmin present.")
       return(partial(thresh.tmin,
                      tminEnvCol=tminEnvCol,
                      tmin=tmin))
-    } else if (is.na(tmin) && !is.na(tmax) && physioData[c('tmax_metric')] == 'crit'){
+    } else if (is.na(tmin) || (!is.na(tmax) && physioData[c('tmax_metric')] == 'crit')){
       ## we've got tmax but no tmin
+      flog.info("\tOnly tmax present.")
+  
       return(partial(thresh.tmax, 
                      tmaxEnvCol=tmaxEnvCol,
                      tmax=tmax))
+    } else{
+      stop(flog.error("prior type %s not supported or only lethal physiology data available.", type))
     }
   } else {
     stop(flog.error("prior type %s not supported or only lethal physiology data available.", type))
@@ -66,15 +81,17 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
 #### Sigmoid functions with plateaus.
 ####
 
-sigmoid.tmax <- function(env, tmax){
+sigmoid.tmax <- function(env, tmax, tmaxEnvCol){
+  env = env[,c(tmaxEnvCol)]
   return(ifelse(env<tmax, 0.9, exp(-(env-tmax)/5)))
 }
-sigmoid.tmin <- function(env, tmin) {
+sigmoid.tmin <- function(env, tmin, tminEnvCol) {
+  env = env[,c(tminEnvCol)]
   result = ifelse(env<tmin, 0.1, 1-exp(-(env-(tmin)/9000)))
 }
 sigmoid.neutralZone <- function(env, tminEnvCol, tmaxEnvCol, neutralMin, neutralMax){
-  tmin_prb = sigmoid.tmin(env[,c(tminEnvCol)], neutralMin)
-  tmax_prb = sigmoid.tmax(env[,c(tmaxEnvCol)], neutralMax)
+  tmin_prb = sigmoid.tmin(env, neutralMin, tminEnvCol)
+  tmax_prb = sigmoid.tmax(env, neutralMax, tmaxEnvCol)
   return(tmin_prb*tmax_prb)
 }
 

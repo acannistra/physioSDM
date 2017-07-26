@@ -30,7 +30,7 @@ assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol
 
 getWorldClimFilepath <- function(biovar, worldclimDir){
   if(!endsWith(worldclimDir, "/")) {
-    flog.error("worldclimDir needs to end with '/' character")
+    stop(flog.error("worldclimDir needs to end with '/' character"))
     return("")
   }
   if(!is.numeric(biovar)){
