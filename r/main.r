@@ -6,13 +6,12 @@ suppressPackageStartupMessages({
   library(futile.logger)
   library(jsonlite)
   library(dplyr)
-  library(snow)
   library(ROCR)
   library(purrr)
   library(uuid)
   source('occurrences.R') ## for GBIFOccurrences and absence generation code.
-  source("climate.R") ## for worldclim extraction code. 
-  source("sdm.R") ## for gaussian process SDM code + helper functions.
+  source("climate.r") ## for worldclim extraction code. 
+  source("sdm.r") ## for gaussian process SDM code + helper functions.
   source("priors.R") ## for physiological priors. 
 })
 PARAMETER_FILE = "../parameters.json" ## parameter file must contain absolute file paths. 
@@ -205,6 +204,7 @@ speciesExperiment = function(speciesData){
         sub = sprintf("(code version: %s)", CODE_VERSION),
         cex.sub = 1, font.sub = 3, col.sub = "red")
   dev.off()
+  
   ## test model with future climate predictions -- work out details there. 
   ## get future climate data
   ## ...
