@@ -24,8 +24,11 @@ if (PARAMS$loglevel == 'debug'){
   flog.threshold(DEBUG)
 }
 SESSION_UUID = UUIDgenerate(use.time=T)
+CODE_VERSION = system("git rev-parse --short HEAD", intern = TRUE)
 flog.info("Session UUID: %s", SESSION_UUID)
+flog.info("Code Version: %s", CODE_VERSION)
 flog.info("Loaded parameters from file '%s'", PARAMETER_FILE)
+
 
 ## 2) Build Species Experimentation Table
 if(PARAMS$species == 'all'){
@@ -83,9 +86,15 @@ speciesExperiment = function(speciesData){
     flog.info("found %d occurrences.", nrow(thesePres))
   }
 
-  ## set up plotting parameters:
+  ## set up plotting parameters for graf
   plotrows = ceiling(length(PARAMS$biovars) / 3)
   plotcols = 3
+  plotwidth = 800
+  plotheight = 600
+  if(PARAMS$plotting){
+    dir.create(sprintf("%s/plots/%s", results_dir, gsub(" ", "-", speciesData[c('species_name')])))
+  }
+
 
   ## get absence points
   flog.info("Generating absence points using circle method.")
@@ -121,8 +130,17 @@ speciesExperiment = function(speciesData){
   } 
   
   par(mfrow=c(plotrows, plotcols))
-  if(PARAMS$plotting) plot(model_noprior, data=F, jitter=0) ## TODO: There's something wrong with plotting, rugs dont work
-  
+  if(PARAMS$plotting) {
+    png(sprintf("%s/plots/%s/graf_responses.png", results_dir, gsub(" ", "-", speciesData[c('species_name')])),
+        width=plotwidth,
+        height=plotheight)
+    par(mfrow=c(plotrows, plotcols))
+    plot(model_noprior, data=F, jitter=0) ## TODO: There's something wrong with plotting, rugs dont work
+    title(sub = sprintf("(code version: %s)", CODE_VERSION),
+          cex.main = 2,   font.main= 2, col.main= "blue",
+          cex.sub = 0.75, font.sub = 3, col.sub = "red")
+    dev.off()
+  }
   ## develop prior
   tmin = as.numeric(speciesData[c('tmin')])
   tmax = as.numeric(speciesData[c('tmax')])
@@ -140,11 +158,24 @@ speciesExperiment = function(speciesData){
   } 
   
   plot.new()
-  par(mfrow=c(plotrows, plotcols))
-  if(PARAMS$plotting) plot(model_withprior, data=T, prior=T)
-
+  if(PARAMS$plotting) {
+    png(sprintf("%s/plots/%s/graf2_prior_responses.png", results_dir, gsub(" ", "-", speciesData[c('species_name')])), 
+        width=plotwidth,
+        height=plotheight)
+    par(mfrow=c(plotrows, plotcols))
+    plot(model_withprior, data=T, prior=T)
+    title(sub = sprintf("(code version: %s)", CODE_VERSION),
+          cex.main = 2,   font.main= 2, col.main= "blue",
+          cex.sub = 1, font.sub = 3, col.sub = "red")
+    dev.off()
+  }
+  
   ## test both models for current distirbution recovery 
+  png(sprintf("%s/plots/%s/ROC.png", results_dir, gsub(" ", "-", speciesData[c('species_name')])),
+      width=plotwidth,
+      height=plotheight)
   par(mfrow=c(1,1))
+  
   testCovs   = subset(split$test, select = -presence)
   testLabels = subset(split$test, select = presence)
   
@@ -155,21 +186,25 @@ speciesExperiment = function(speciesData){
 
   prior_aucroc = graf_auc_roc(model_withprior, testCovs, testLabels)
   plot(prior_aucroc$roc, col='blue', add=T)
-  legend(0.6, 0.08, c(sprintf("No Prior (AUC: %2f)", noprior_aucroc$auc),
-                     sprintf("With Prior (AUC: %2f)", prior_aucroc$auc)), 
-         lty=c(1,1), 
-         lwd=c(2.5,2.5),col=c("red","blue"))
-  title(sprintf("%s Model Performance",  speciesData[c('species_name')]))
-  
+
     
   flog.info("With Prior ROC (AUC: %2f)", prior_aucroc$auc)
 
   ## Compare against MaxEnt
-  #try(dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/server/libjvm.dylib")) ##only on mac
-  #model_maxent = buildMaxEnt(split$train)
-  
-  
-  
+  try(dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/jre/lib/server/libjvm.dylib")) ##only on mac
+  model_maxent = buildMaxEnt(split$train)
+  maxent_aucroc = maxent_auc_roc(model_maxent, testCovs, testLabels)
+  plot(maxent_aucroc$roc, col='green', add=T)
+
+  legend(0.5, 0.2, c(sprintf("No Prior (AUC: %2f)", noprior_aucroc$auc),
+                      sprintf("With Prior (AUC: %2f)", prior_aucroc$auc),
+                      sprintf("MaxEnt (AUC: %2f", maxent_aucroc$auc)), 
+         lty=c(1,1), 
+         lwd=c(2.5,2.5),col=c("red","blue", "green"))
+  title(main=sprintf("%s Model Performance",  speciesData[c('species_name')]), 
+        sub = sprintf("(code version: %s)", CODE_VERSION),
+        cex.sub = 1, font.sub = 3, col.sub = "red")
+  dev.off()
   ## test model with future climate predictions -- work out details there. 
   ## get future climate data
   ## ...
@@ -178,7 +213,8 @@ speciesExperiment = function(speciesData){
   
   results = data.frame(species=speciesData[c('species_name')],
                        graf_cur_auc = noprior_aucroc$auc, 
-                       phys_cur_auc = prior_aucroc$auc)
+                       phys_cur_auc = prior_aucroc$auc, 
+                       maxent_cur_auc = maxent_aucroc$auc)
   
   flog.info("*********species %s complete**********", speciesData[c('species_name')])
   return(results)
@@ -189,7 +225,10 @@ results_dir = sprintf("../results/%s", SESSION_UUID)
 failures_fname = sprintf("%s/failures.txt", results_dir)
 results_fname = sprintf("%s/results.csv", results_dir)
 
+
 dir.create(results_dir)
+if(PARAMS$plotting){ dir.create(sprintf("%s/plots", results_dir))}
+
 file.copy(PARAMETER_FILE, sprintf("%s/parameters.json", results_dir))
 
 failfile = file(failures_fname, 'w')

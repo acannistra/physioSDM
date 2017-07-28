@@ -71,5 +71,13 @@ graf_auc_roc = function(model, test_covs, test_labels){
 }
 
 maxent_auc_roc = function(model, test_covs, test_labels){
-  
+  results = list()
+  prob = data.frame(predict(model, test_covs))
+  pred = prediction(prob, test_labels)
+  auc  = performance(pred, measure='auc')
+  auc = auc@y.values[[1]]
+  results$auc = auc
+  roc = performance(pred, measure='tpr', x.measure='fpr')
+  results$roc = roc
+  return(results)
 }
