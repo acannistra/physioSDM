@@ -7,7 +7,7 @@ VOLUME /projdir
 WORKDIR /projdir
 
 # install dependencies
-RUN apt-get update && apt-get install -y libgeos-dev libgdal-dev default-jdk libssl-dev
+RUN apt-get update && apt-get install -y libgeos-dev libgdal-dev default-jdk libssl-dev git
 COPY INSTALL.r INSTALL.r
 RUN Rscript INSTALL.r
 

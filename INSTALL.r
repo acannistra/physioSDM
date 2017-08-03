@@ -9,4 +9,5 @@ install.packages(c('dismo',
                    'rgbif', 
                    'caret',
                    'rgdal',
-                   'rJava'))
+                   'rJava', 
+                   'pryr'))
