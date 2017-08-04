@@ -1,0 +1,16 @@
+// Parameter file for main.R program, defining 
+// variables useful in experimentation. See documentation. 
+// All paths must be absolute.
+{
+    "species" : "all", //list of specific species or "all"
+    "time_periods" : ["1970:2009"], //past first, then future. 
+    "bioclim_source" : "worldclim",
+    "bioclim_dir" : "/projdir/data/climate/worldclim/wc2.0_2.5m_bio/",
+    "biovars" : ["bio1", "bio5", "bio6", "bio7", "bio14"],
+    "prior_type" : "sigmoid",
+    "phys_datafile" : "/projdir/data/physiology/Sundayetal_thermallimits_PNAS_2014.csv",
+    "min_occurrence_threshold" : 100, //minimum number of GBIF occurrences necessary to build model.,
+    "train_fraction" : 0.75,
+    "plotting" : true, 
+    "loglevel" : "debug"
+}
