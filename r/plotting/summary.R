@@ -43,6 +43,8 @@ p2 = ggplot(melted, aes(x=variable)) +
   labs(title=sprintf("Algorithm Means (n = %d)", length(unique(melted$species)))) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 
+p3 = ggplot(melted, aes(x=variable, y=value)) + geom_boxplot() + labs(title="Algorithm Summary")
+
 png(paste0(results_dir, "summaryPlot.png"), units = 'in', width=11, height=8.5, res=300)
 grid.arrange(p1, p2)
 dev.off()

@@ -24,6 +24,26 @@ assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol
   return(occurrences)
 }
 
+getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=NULL){
+  brick = stack()
+  for(biovar in biovars){
+    wc_file = getWorldClimFilepath(biovar, worldclimDir)
+    flog.info("\tOpening file %s", wc_file)
+    wc_rast = raster(wc_file)
+    if(!is.null(divide)){
+      if(biovar %in% divide){
+        wc_rast = wc_rast / 10
+      }
+    }
+    names(wc_rast) = as.character(biovar)
+    if(is.null(extent)){
+      brick = stack(brick, wc_rast)
+    } else {
+      brick = stack(brick, crop(wc_rast, extent))
+    }
+  }
+  return(brick)
+}
 ####
 #### WorldClim/BioCLIM accessors 
 ####
@@ -45,3 +65,4 @@ getWorldClimFilepath <- function(biovar, worldclimDir){
   }
   return(filename)
 }
+

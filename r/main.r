@@ -15,6 +15,16 @@ suppressPackageStartupMessages({
   source("priors.R") ## for physiological priors. 
 })
 PARAMETER_FILE = "../parameters.json" ## parameter file must contain absolute file paths. 
+WORLDCLIM_SCALED_BIOCLIM_VARS = c("bio1", 
+                                  "bio2", 
+                                  "bio5", 
+                                  "bio6", 
+                                  "bio7", 
+                                  "bio8", 
+                                  "bio9", 
+                                  "bio10", 
+                                  "bio11")
+OLD.PAR <- par(mar = c(0, 0, 0, 0))
 
 
 ## 1) load parameters for experimentation 
@@ -75,11 +85,13 @@ speciesExperiment = function(speciesData){
     flog.warn("No occurrences from GBIF for this species! Aborting experiment and continuing.")
     flog.info("*********species %s complete**********", speciesData[c('species_name')])
     write(speciesData[c('species_name')], append=T, file=failfile)
+    write("\tproblem: no occurrences.", append=T, file=failfile)
     return(NULL)
   } else if (nrow(thesePres) < PARAMS$min_occurrence_threshold){
     flog.warn("Number of GBIF occurrences (%d) less than min_occurrence_threshold parameter (%d)", nrow(thesePres), PARAMS$min_occurrence_threshold)
     flog.info("*********species %s complete**********", speciesData[c('species_name')])
     write(speciesData[c('species_name')], append=T, file=failfile)
+    write('\tproblem: minimum occurrence threshold not met.')
     return(NULL)
   } else {
     flog.info("found %d occurrences.", nrow(thesePres))
@@ -125,6 +137,7 @@ speciesExperiment = function(speciesData){
   })
   if (is.null(model_noprior)){
     write(speciesData[c('species_name')], append=T, file=failfile)
+    write("\tproblem: model without prior failed to build.", append=T, file=failfile)
     return(NULL)
   } 
   
@@ -143,7 +156,7 @@ speciesExperiment = function(speciesData){
   ## develop prior
   tmin = as.numeric(speciesData[c('tmin')])
   tmax = as.numeric(speciesData[c('tmax')])
-  prior = buildPrior(PARAMS$prior_type, tminEnvCol = 'bio1', tmaxEnvCol = 'bio1', speciesData)
+  prior = buildPrior(PARAMS$prior_type, tminEnvCol = 'bio6', tmaxEnvCol = 'bio5', speciesData)
   ## train model with prior
   model_withprior = tryCatch({
     buildSDM(split$train, prior = prior, opt=F)
@@ -153,6 +166,7 @@ speciesExperiment = function(speciesData){
   })
   if (is.null(model_withprior)){
     write(speciesData[c('species_name')], append=T, file=failfile)
+    write("\tproblem: model with prior failed to build.", append=T, file=failfile)
     return(NULL)
   } 
   
@@ -207,7 +221,20 @@ speciesExperiment = function(speciesData){
   
   ## test model with future climate predictions -- work out details there. 
   ## get future climate data
-  ## ...
+  if(PARAMS$predict){
+    testExtent = eval(parse(text=PARAMS$test_extent))
+    futureClim = getRasterStack_worldclim(PARAMS$biovars, 
+                                          PARAMS$future_bioclim_dir, 
+                                          divide=union(PARAMS$biovars, WORLDCLIM_SCALED_BIOCLIM_VARS))
+    points = data.frame(rasterToPoints(crop(futureClim, testExtent)))
+    latLonFuture = subset(points, select=c(x, y))
+    varsFuture = subset(points, select=-c(x, y))
+    ans = cbind(latLonFuture, data.frame(predict(model_noprior, varsFuture))$posterior.mode)
+    par(OLD.PAR)
+    plot.new()
+    plot(rasterFromXYZ(ans))
+  }
+
   
   ## Complete. Return Results
   
@@ -221,17 +248,21 @@ speciesExperiment = function(speciesData){
 }
 
 ### Run Experiment on All Species.
+
+#### Create Results + Failures Storage Directories
 results_dir = sprintf("../results/%s", SESSION_UUID)
 failures_fname = sprintf("%s/failures.txt", results_dir)
 results_fname = sprintf("%s/results.csv", results_dir)
-
-
 dir.create(results_dir)
 if(PARAMS$plotting){ dir.create(sprintf("%s/plots", results_dir))}
 
+#### Copy parameters into runtime directory
 file.copy(PARAMETER_FILE, sprintf("%s/parameters.json", results_dir))
 
+#### Initialize Failure File
 failfile = file(failures_fname, 'w')
+
+#### RUN EXPERIMENT + Save results
 results = reduce(apply(all_species, 1, speciesExperiment), rbind)
 write.table(results, file=results_fname, sep=',', row.names=FALSE)
   
