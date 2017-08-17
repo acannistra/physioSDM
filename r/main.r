@@ -156,14 +156,22 @@ speciesExperiment = function(speciesData){
   ## develop prior
   tmin = as.numeric(speciesData[c('tmin')])
   tmax = as.numeric(speciesData[c('tmax')])
-  prior = buildPrior(PARAMS$prior_type, tminEnvCol = 'bio6', tmaxEnvCol = 'bio5', speciesData)
-  ## train model with prior
-  model_withprior = tryCatch({
-    buildSDM(split$train, prior = prior, opt=F)
+  prior = tryCatch({
+    buildPrior(PARAMS$prior_type, tminEnvCol = 'bio6', tmaxEnvCol = 'bio5', speciesData)
   }, error = function(e){
-    flog.error(str(e$message))
     return(NULL)
   })
+  ## train model with prior
+  model_withprior = NULL
+  if(!is.null(prior)){
+    model_withprior = tryCatch({
+      buildSDM(split$train, prior = prior, opt=F)
+    }, error = function(e){
+      flog.error(str(e$message))
+      return(NULL)
+    })
+  }
+  
   if (is.null(model_withprior)){
     write(speciesData[c('species_name')], append=T, file=failfile)
     write("\tproblem: model with prior failed to build.", append=T, file=failfile)

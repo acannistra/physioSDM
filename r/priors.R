@@ -33,20 +33,21 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
       return(partial(sigmoid.neutralZone, 
                      tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol, 
                      neutralMin=tmin, neutralMax=tmax))
-    } else if (is.na(tmax) || (!is.na(tmin) && physioData[c('tmin_metric')] == 'crit')){
+    } else if (is.na(tmax) && (!is.na(tmin) && physioData[c('tmin_metric')] == 'crit')){
       flog.info("\tOnly tmin present.")
       ## we've got tmin but no tmax
       return(partial(sigmoid.tmin,
                      tminEnvCol=tminEnvCol,
                      tmin=tmin))
-    } else if (is.na(tmin) || (!is.na(tmax) && physioData[c('tmax_metric')] == 'crit')){
+    } else if (is.na(tmin) && (!is.na(tmax) && physioData[c('tmax_metric')] == 'crit')){
       ## we've got tmax but no tmin
       flog.info("\tOnly tmax present.")
       return(partial(sigmoid.tmax,
                      tmaxEnvCol=tmaxEnvCol,
                      tmax=tmax))
     } else {
-      stop(flog.error("prior type %s not supported or only lethal physiology data available.", type))
+      flog.error("prior type %s not supported or only lethal physiology data available.", type)
+      return(NULL)
     }
   } else if (type == 'thresh') {
     if(!is.na(tmin) && !is.na(tmax) && physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ##only use crit
