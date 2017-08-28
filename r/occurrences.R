@@ -21,7 +21,7 @@ GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=10000) {
                       limit = limit,
                       eventDate = paste(minyear, maxyear, sep = ','))
   }
-  print(occs$data)
+
   if (is.null(occs$meta$count) || is.null(occs$data)){
     flog.warn("Making second attempt at searching GBIF: raw backbone search")
     backboneResult = name_backbone(name=taxon, rank='species')
