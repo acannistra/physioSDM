@@ -25,7 +25,7 @@ GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=10000) {
   if (is.null(occs$meta$count) || is.null(occs$data)){
     flog.warn("Making second attempt at searching GBIF: raw backbone search")
     backboneResult = name_backbone(name=taxon, rank='species')
-    if(backboneResult$rank == 'SPECIES' && backboneResult$confidence > 90){
+    if(backboneResult$matchType != "NONE" && backboneResult$rank == 'SPECIES' && backboneResult$confidence > 90){
       occs = occ_search(scientificName = backboneResult$scientificName, 
                         hasCoordinate = T, 
                         limit = limit)
