@@ -27,12 +27,26 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
             tmax, physioData[c('tmax_metric')])
   flog.warn("only using critical thermal threshold data.")
   if(type == 'sigmoid'){
-    if(!is.na(tmin) && !is.na(tmax) && physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ##only use crit
+    if(!is.na(tmin) && !is.na(tmax)){
       ## we've got both tmin and tmax
       flog.info("\tBoth tmin and tmax present.")
-      return(partial(sigmoid.neutralZone, 
-                     tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol, 
-                     neutralMin=tmin, neutralMax=tmax))
+      if(physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ## both critical
+        return(partial(sigmoid.neutralZone, 
+                       tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol, 
+                       neutralMin=tmin, neutralMax=tmax))
+      } else if (physioData[c('tmin_metric')] != 'crit' &&physioData[c('tmax_metric')] == 'crit') {
+        ## tmin is lethal, but tmax is critical, only tmax:
+        flog.info("Only tmax used (tmin lethal).")
+        return(partial(sigmoid.tmax,
+                       tmaxEnvCol=tmaxEnvCol,
+                       tmax=tmax))
+      } else if(physioData[c('tmin_metric')] == 'crit' &&physioData[c('tmax_metric')] != 'crit'){
+        # tmax is lethal, only tmin
+        flog.info("Only tmin used (tmax lethal).")
+        return(partial(sigmoid.tmin,
+                       tminEnvCol=tminEnvCol,
+                       tmin=tmin))
+      }
     } else if (is.na(tmax) && (!is.na(tmin) && physioData[c('tmin_metric')] == 'crit')){
       flog.info("\tOnly tmin present.")
       ## we've got tmin but no tmax
@@ -50,13 +64,26 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
       return(NULL)
     }
   } else if (type == 'thresh') {
-    if(!is.na(tmin) && !is.na(tmax) && physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ##only use crit
+    if(!is.na(tmin) && !is.na(tmax)){
       ## we've got both tmin and tmax
       flog.info("\tBoth tmin and tmax present.")
-      
-      return(partial(thresh.plateau,
-                     tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol,
-                     tmin=tmin, tmax=tmax))
+      if(physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ## both critical
+        return(partial(thresh.plateau, 
+                       tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol, 
+                       neutralMin=tmin, neutralMax=tmax))
+      } else if (physioData[c('tmin_metric')] != 'crit' &&physioData[c('tmax_metric')] == 'crit') {
+        ## tmin is lethal, but tmax is critical, only tmax:
+        flog.info("Only tmax used (tmin lethal).")
+        return(partial(thresh.tmax,
+                       tmaxEnvCol=tmaxEnvCol,
+                       tmax=tmax))
+      } else if(physioData[c('tmin_metric')] == 'crit' &&physioData[c('tmax_metric')] != 'crit'){
+        # tmax is lethal, only tmin
+        flog.info("Only tmin used (tmax lethal).")
+        return(partial(thresh.tmin,
+                       tminEnvCol=tminEnvCol,
+                       tmin=tmin))
+      }
     } else if (is.na(tmax) || (!is.na(tmin) && physioData[c('tmin_metric')] == 'crit')){
       ## we've got tmin but no tmax
       flog.info("\tOnly tmin present.")
