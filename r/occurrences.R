@@ -11,7 +11,7 @@ suppressPackageStartupMessages({
 #### GBIF Data Extraction:
 ####
 GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=100000) {
-  flog.info("searching GBIF for occurrences for species %s....", taxon)
+  flog.info("searching GBIF for occurrences for species %s...", taxon)
   if (is.na(minyear) & is.na(maxyear)) {
     occs = occ_search(scientificName = taxon, hasCoordinate = T, limit = 100000)
   } 
@@ -21,8 +21,22 @@ GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=100000) {
                       limit = limit,
                       eventDate = paste(minyear, maxyear, sep = ','))
   }
-  if (is.null(occs$meta$count)){
-    return(NULL)
+  print(occs$data)
+  if (is.null(occs$meta$count) || is.null(occs$data)){
+    flog.warn("Making second attempt at searching GBIF: raw backbone search")
+    backboneResult = name_backbone(name=taxon, rank='species')
+    if(backboneResult$rank == 'SPECIES' && backboneResult$confidence > 90){
+      occs = occ_search(scientificName = backboneResult$scientificName, 
+                        hasCoordinate = T, 
+                        limit = 100000)
+      flog.info(sprintf("Success! Found occurrences in secondary search. GBIF Name: %s, (synonym?: %d. matchtype: %s)",
+                        backboneResult$canonicalName,
+                        backboneResult$synonym,
+                        backboneResult$matchType))
+    } else{
+      flog.warn("No results.")
+      return(NULL)
+    }
   }
   return(occs$data)
 }
