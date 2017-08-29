@@ -76,6 +76,9 @@ flog.info("Loaded physiology data for %d species (%d species with no data.)", nr
 currentTimePeriod_start = unlist(strsplit(PARAMS$time_periods[1], ":"))[1]
 currentTimePeriod_end   = unlist(strsplit(PARAMS$time_periods[1], ":"))[2]
 
+.FAILFILE = function(species, reason, file){
+  write(sprintf("%s\t%s", species, reason), append=T, file=file)
+}
 
 speciesExperiment = function(speciesData){
   flog.info("Starting experimentation with species %s", speciesData[c('species_name')])
@@ -84,14 +87,12 @@ speciesExperiment = function(speciesData){
   if(is.null(thesePres)){
     flog.warn("No occurrences from GBIF for this species! Aborting experiment and continuing.")
     flog.info("*********species %s complete**********", speciesData[c('species_name')])
-    write(speciesData[c('species_name')], append=T, file=failfile)
-    write("\tproblem: no occurrences.", append=T, file=failfile)
+    .FAILFILE(speciesData[c('species_name')], "no occurrences.", failfile)
     return(NULL)
   } else if (nrow(thesePres) < PARAMS$min_occurrence_threshold){
     flog.warn("Number of GBIF occurrences (%d) less than min_occurrence_threshold parameter (%d)", nrow(thesePres), PARAMS$min_occurrence_threshold)
     flog.info("*********species %s complete**********", speciesData[c('species_name')])
-    write(speciesData[c('species_name')], append=T, file=failfile)
-    write('\tproblem: minimum occurrence threshold not met.')
+    .FAILFILE(speciesData[c('species_name')], "minimum occurrence threshold not met", failfile)
     return(NULL)
   } else {
     flog.info("found %d occurrences.", nrow(thesePres))
@@ -108,13 +109,23 @@ speciesExperiment = function(speciesData){
 
 
   ## get absence points
-  flog.info("Generating absence points using circle method.")
-  theseAbs  = generateCircleAbsences(thesePres, 50000, nrow(thesePres))
+  all_points = tryCatch({
+    flog.info("Generating absence points using circle method.")
+    theseAbs  = generateCircleAbsences(thesePres, 50000, nrow(thesePres))
   
-  ## Merge presence and absence data. 
-  all_points = mergePresAbs(thesePres[c('decimalLongitude', 'decimalLatitude')], theseAbs)
-  flog.info("Merged %d points.", nrow(all_points))
+    ## Merge presence and absence data. 
+    all_points = mergePresAbs(thesePres[c('decimalLongitude', 'decimalLatitude')], theseAbs)
+    flog.info("Merged %d points.", nrow(all_points))
+    all_points
+    }, error=function(e){
+      flog.error(sprintf("failure in circles: %s", str(e$message)))
+      return(NULL)
+    })
   
+  if(is.null(all_points)){
+    .FAILFILE(speciesData[c('species_name')], "error in absence generation or merging", failfile)
+    return(NULL)
+  }
   ## connect climate data
   flog.info("Assigning climate data using source %s located at %s.", PARAMS$bioclim_source, PARAMS$bioclim_dir)
   all_with_clim = assignPointData_worldclim(all_points, PARAMS$biovars, PARAMS$bioclim_dir)
@@ -136,8 +147,7 @@ speciesExperiment = function(speciesData){
     return(NULL)
   })
   if (is.null(model_noprior)){
-    write(speciesData[c('species_name')], append=T, file=failfile)
-    write("\tproblem: model without prior failed to build.", append=T, file=failfile)
+    .FAILFILE(speciesData[c('species_name')], "model without prior failed to build.", failfile)
     return(NULL)
   } 
   
@@ -173,8 +183,7 @@ speciesExperiment = function(speciesData){
   }
   
   if (is.null(model_withprior)){
-    write(speciesData[c('species_name')], append=T, file=failfile)
-    write("\tproblem: model with prior failed to build.", append=T, file=failfile)
+    .FAILFILE(speciesData[c('species_name')], "model with prior failed to build", failfile)
     return(NULL)
   } 
   
