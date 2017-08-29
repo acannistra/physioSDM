@@ -268,6 +268,32 @@ speciesExperiment = function(speciesData){
 
 #### Create Results + Failures Storage Directories
 results_dir = sprintf("../results/%s", SESSION_UUID)
+dir.create(results_dir)
+if(PARAMS$plotting){ dir.create(sprintf("%s/plots", results_dir))}
+
+if(!is.null(PARAMS$chunksize)){
+  chunk_id = 0
+  chunks <- ggplot2::cut_interval(1:nrow(all_species), length=PARAMS$chunksize, labels=FALSE)
+  for (chunk in unique(chunks)){
+    these_species = all_species[which(chunks==chunk),]
+    flog.info("Starting chunk %d (length: %d)", chunk_id, nrow(these_species))
+    
+    failures_fname = sprintf("%s/failures-chunk%d.txt", results_dir, chunk_id)
+    results_fname = sprintf("%s/results-chunk%d.csv", results_dir, chunk_id)
+    
+    #### Copy parameters into runtime directory
+    file.copy(PARAMETER_FILE, sprintf("%s/parameters.json", results_dir))
+    
+    #### Initialize Failure File
+    failfile = file(failures_fname, 'w')
+    
+    #### RUN EXPERIMENT + Save results
+    results = reduce(apply(these_species, 1, speciesExperiment), rbind)
+    write.table(results, file=results_fname, sep=',', row.names=FALSE)
+    chunk_id = chunk_id + 1
+  }
+}
+
 failures_fname = sprintf("%s/failures.txt", results_dir)
 results_fname = sprintf("%s/results.csv", results_dir)
 dir.create(results_dir)
