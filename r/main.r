@@ -271,6 +271,7 @@ results_dir = sprintf("../results/%s", SESSION_UUID)
 dir.create(results_dir)
 if(PARAMS$plotting){ dir.create(sprintf("%s/plots", results_dir))}
 
+## run chunks if specified
 if(!is.null(PARAMS$chunksize)){
   chunk_id = 0
   chunks <- ggplot2::cut_interval(1:nrow(all_species), length=PARAMS$chunksize, labels=FALSE)
@@ -288,24 +289,24 @@ if(!is.null(PARAMS$chunksize)){
     failfile = file(failures_fname, 'w')
     
     #### RUN EXPERIMENT + Save results
-    results = reduce(apply(these_species, 1, speciesExperiment), rbind)
+    results = reduce(apply(these_species, 1, speciesExperiment), rbind, .init=c())
     write.table(results, file=results_fname, sep=',', row.names=FALSE)
     chunk_id = chunk_id + 1
   }
+} else {
+  failures_fname = sprintf("%s/failures.txt", results_dir)
+  results_fname = sprintf("%s/results.csv", results_dir)
+  dir.create(results_dir)
+  if(PARAMS$plotting){ dir.create(sprintf("%s/plots", results_dir))}
+  
+  #### Copy parameters into runtime directory
+  file.copy(PARAMETER_FILE, sprintf("%s/parameters.json", results_dir))
+  
+  #### Initialize Failure File
+  failfile = file(failures_fname, 'w')
+  
+  #### RUN EXPERIMENT + Save results
+  results = reduce(apply(all_species, 1, speciesExperiment), rbind)
+  write.table(results, file=results_fname, sep=',', row.names=FALSE)
 }
-
-failures_fname = sprintf("%s/failures.txt", results_dir)
-results_fname = sprintf("%s/results.csv", results_dir)
-dir.create(results_dir)
-if(PARAMS$plotting){ dir.create(sprintf("%s/plots", results_dir))}
-
-#### Copy parameters into runtime directory
-file.copy(PARAMETER_FILE, sprintf("%s/parameters.json", results_dir))
-
-#### Initialize Failure File
-failfile = file(failures_fname, 'w')
-
-#### RUN EXPERIMENT + Save results
-results = reduce(apply(all_species, 1, speciesExperiment), rbind)
-write.table(results, file=results_fname, sep=',', row.names=FALSE)
   
