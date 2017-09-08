@@ -1,0 +1,9 @@
+thamnophis sirtalis concinnus	minimum occurrence threshold not met
+platysaurus intermedius wilhelmi	no occurrences.
+pseudocordylus melanotus-melanotus	no occurrences.
+hemachatus haemachatus	minimum occurrence threshold not met
+hoplodactylus maculatus	minimum occurrence threshold not met
+sphaerodactylus gaigeae	minimum occurrence threshold not met
+sphaerodactylus klauberi	minimum occurrence threshold not met
+sphaerodactylus nicholsi	minimum occurrence threshold not met
+sphaerodactylus roosevelti	minimum occurrence threshold not met

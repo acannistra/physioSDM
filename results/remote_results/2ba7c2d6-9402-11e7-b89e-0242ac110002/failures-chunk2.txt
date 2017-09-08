@@ -1,0 +1,9 @@
+diamesa sp	no occurrences.
+glossina pallidipes	minimum occurrence threshold not met
+tetracanthella afurcata	minimum occurrence threshold not met
+nysius wekiuicola	minimum occurrence threshold not met
+eurygaster integriceps put	minimum occurrence threshold not met
+aphanenogaster senilis	no occurrences.
+camponotus cruentatus	minimum occurrence threshold not met
+cataglyphis cursor	minimum occurrence threshold not met
+eciton burchellii	model with prior failed to build

@@ -1,0 +1,3 @@
+rana pretiosa	minimum occurrence threshold not met
+spea holbrooki	no occurrences.
+desmognathus fuscus	model with prior failed to build

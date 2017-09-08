@@ -1,0 +1,8 @@
+micrathyria eximia	minimum occurrence threshold not met
+micrathyria ocellata	minimum occurrence threshold not met
+tauriphila argo	minimum occurrence threshold not met
+tramea carolina	minimum occurrence threshold not met
+tramea cophysa	minimum occurrence threshold not met
+tramea walkeri	no occurrences.
+macromia taeniolata	minimum occurrence threshold not met
+meridacris subaptera	no occurrences.

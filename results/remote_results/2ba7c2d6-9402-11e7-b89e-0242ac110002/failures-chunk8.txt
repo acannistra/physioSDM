@@ -1,0 +1,4 @@
+bufo leutkeni	minimum occurrence threshold not met
+bufo nelsoni	minimum occurrence threshold not met
+eleutherodactylus fleischmanni	minimum occurrence threshold not met
+acris crepitans	model with prior failed to build
