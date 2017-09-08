@@ -83,7 +83,11 @@ currentTimePeriod_end   = unlist(strsplit(PARAMS$time_periods[1], ":"))[2]
 speciesExperiment = function(speciesData){
   flog.info("Starting experimentation with species %s", speciesData[c('species_name')])
   #thesePres = GBIFOccurrences(speciesData[c('species_name')], currentTimePeriod_start, currentTimePeriod_end)
-  thesePres = GBIFOccurrences(speciesData[c('species_name')], currentTimePeriod_start, currentTimePeriod_end, limit = 10000)
+  occlimit = 10000
+  if (!is.null(PARAMS$max_occurrences)){
+    occlimit = PARAMS$max_occurrences
+  }
+  thesePres = GBIFOccurrences(speciesData[c('species_name')], currentTimePeriod_start, currentTimePeriod_end, limit = occlimit)
   if(is.null(thesePres)){
     flog.warn("No occurrences from GBIF for this species! Aborting experiment and continuing.")
     flog.info("*********species %s complete**********", speciesData[c('species_name')])
