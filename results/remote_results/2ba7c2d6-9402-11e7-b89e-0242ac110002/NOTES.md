@@ -1,1 +1,0 @@
-This experiment was run on all species, on an EC2 instance (c4.xlarge) with limited occurrence information (as a result of memory errors) to 3000 occurrences per species. See parameters.json for details on the experiment. 
