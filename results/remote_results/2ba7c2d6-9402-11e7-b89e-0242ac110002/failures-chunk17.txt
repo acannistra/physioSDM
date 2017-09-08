@@ -1,0 +1,4 @@
+diemictylus viridescens	minimum occurrence threshold not met
+eurycea bislineata	model with prior failed to build
+plethodon glutinosus	model with prior failed to build
+taricha torosa	model with prior failed to build

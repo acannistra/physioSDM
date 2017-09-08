@@ -1,0 +1,7 @@
+formica perpilosa	minimum occurrence threshold not met
+melophorus bagoti	minimum occurrence threshold not met
+messor bouvieri	minimum occurrence threshold not met
+messor capitatus	minimum occurrence threshold not met
+myrmecocystus depilis	minimum occurrence threshold not met
+myrmecocystus mexican	model with prior failed to build
+myrmecocystus romainei	minimum occurrence threshold not met

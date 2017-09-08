@@ -1,0 +1,6 @@
+liolaemus canqueli	minimum occurrence threshold not met
+liolaemus capillitas	minimum occurrence threshold not met
+liolaemus cf telsen	minimum occurrence threshold not met
+liolaemus chacoensis	minimum occurrence threshold not met
+liolaemus cuyanus	minimum occurrence threshold not met
+liolaemus fabiani	minimum occurrence threshold not met

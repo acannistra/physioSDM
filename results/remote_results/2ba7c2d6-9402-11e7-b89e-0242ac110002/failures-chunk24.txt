@@ -1,0 +1,4 @@
+anolis tropidolepis	minimum occurrence threshold not met
+egernia striola	no occurrences.
+eumeces elegans	minimum occurrence threshold not met
+oligosoma maccanni	minimum occurrence threshold not met

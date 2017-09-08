@@ -1,0 +1,3 @@
+phrynosoma douglassii	minimum occurrence threshold not met
+sceloporus jarrovi	model with prior failed to build
+sceloporus undulatus	no occurrences.

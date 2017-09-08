@@ -1,0 +1,10 @@
+celatoblatta quinquemaculata	minimum occurrence threshold not met
+onychiurus vontoernei	minimum occurrence threshold not met
+cf derocalymma sp	no occurrences.
+cf perisphaeria sp1	no occurrences.
+cf perisphaeria sp2	no occurrences.
+cf perisphaeria sp3	no occurrences.
+calathus melanocephalus l	model with prior failed to build
+colpodes sp1	no occurrences.
+colpodes sp2	no occurrences.
+pterostichini sp	no occurrences.

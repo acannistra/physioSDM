@@ -1,0 +1,7 @@
+sphenomorphus incognitus	minimum occurrence threshold not met
+sphenomorphus taiwanensis	minimum occurrence threshold not met
+cnemidophorus tigris	no occurrences.
+liolaemus abaucan	no occurrences.
+liolaemus albiceps	no occurrences.
+liolaemus altissimus	no occurrences.
+liolaemus boulengeri	minimum occurrence threshold not met

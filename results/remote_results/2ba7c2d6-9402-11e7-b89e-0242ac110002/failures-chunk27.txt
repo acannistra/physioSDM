@@ -1,0 +1,8 @@
+liolaemus fitzingerii	minimum occurrence threshold not met
+liolaemus fuscus	minimum occurrence threshold not met
+liolaemus irregularis	minimum occurrence threshold not met
+liolaemus kingii	minimum occurrence threshold not met
+liolaemus koslowskyi	minimum occurrence threshold not met
+liolaemus laurenti	minimum occurrence threshold not met
+liolaemus leopardinus	minimum occurrence threshold not met
+liolaemus melanops	minimum occurrence threshold not met
