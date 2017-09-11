@@ -12,4 +12,4 @@ data/physiology/*
 !data/physiology/.gitkeep
 data/maps/*
 !data/maps/.gitkeep
-
+results/*
