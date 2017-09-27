@@ -111,11 +111,17 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
 
 sigmoid.tmax <- function(env, tmax, tmaxEnvCol){
   env = env[,c(tmaxEnvCol)]
-  return(ifelse(env<tmax, 0.9, exp(-(env-tmax)/5)))
+  result = ifelse(env<tmax, 0.5, exp(-(env-tmax)/5)-0.5)
+  result[result <= 0] = 0.01
+  result[result > 1] = 1
+  return(result)
 }
 sigmoid.tmin <- function(env, tmin, tminEnvCol) {
   env = env[,c(tminEnvCol)]
-  result = ifelse(env<tmin, 0.1, 1-exp(-(env-(tmin)/9000)))
+  result = ifelse(env>tmin, 0.5, 0.5-exp(-(env-(tmin)/99000)))
+  result[result <= 0] = 0.01
+  result[result > 1] = 1
+  return(result)
 }
 sigmoid.neutralZone <- function(env, tminEnvCol, tmaxEnvCol, neutralMin, neutralMax){
   tmin_prb = sigmoid.tmin(env, neutralMin, tminEnvCol)

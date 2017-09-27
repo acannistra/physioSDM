@@ -2,7 +2,9 @@
 // variables useful in experimentation. See documentation. 
 // All paths must be absolute.
 {
-    "species" : "bufo haemititicus", //list of specific species or "all"
+    "species" : ["sceloporus occidentalis"],// "laudakia stellio", "charina bottae", "chamaeleo dilepis", "chamaeleo hohnelii", "thamnophis ordinoides"],//["rana clamitans", "sceloporus occidentalis", "bufo boreas"], //list of specific species or "all",
+    "chunksize" : 2,
+    //"max_occurrences": 3000,
     "time_periods" : ["1970:2009"], //past first, then future. 
     "bioclim_source" : "worldclim",
     //"bioclim_dir" : "/Volumes/Tony Cannistra 4017930916/climate/worldclim/wc2.0_2.5m_bio/",
@@ -13,8 +15,11 @@
     "phys_datafile" : "/Users/tony/Dropbox/Projects/UW/physdm/data/physiology/Sundayetal_thermallimits_PNAS_2014.csv",
     "min_occurrence_threshold" : 100, //minimum number of GBIF occurrences necessary to build model.,
     "train_fraction" : 0.75,
-    "predict": false,
-    "test_extent" : "extent(-166.9921875, -49.9, 7.8, 71.3)",
+    "predict": true,
+    "test_extent" : "extent(-124.48,-112.13,32.54,49)",//"extent(-124.9921875, -66.9, 7.8, 30.3)",
     "plotting" : true, 
-    "loglevel" : "debug"
+    "loglevel" : "debug", 
+    "plot_res" : 200, 
+    "parallel" : true, 
+    "cores" : 3
 }

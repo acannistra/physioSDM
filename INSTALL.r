@@ -10,4 +10,5 @@ install.packages(c('dismo',
                    'caret',
                    'rgdal',
                    'rJava', 
-                   'pryr'))
+                   'pryr', 
+                   'igraph'))

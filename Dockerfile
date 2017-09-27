@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y libgeos-dev libgdal-dev default-jdk lib
 COPY INSTALL.r INSTALL.r
 RUN Rscript INSTALL.r
 
-# download maxent
-ADD http://biodiversityinformatics.amnh.org/open_source/maxent/maxent.php?op=download /usr/local/lib/R/site-library/dismo/java/maxent.jar
+# download + install maxent
+ADD http://biodiversityinformatics.amnh.org/open_source/maxent/maxent.php?op=download /usr/local/lib/R/site-library/dismo/java/
+RUN cd /usr/local/lib/R/site-library/dismo/java/ && unzip maxent.zip 
 
 CMD "/usr/bin/bash"

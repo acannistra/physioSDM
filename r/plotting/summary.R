@@ -6,8 +6,8 @@ suppressPackageStartupMessages({
 })
 
 #args = commandArgs(trailingOnly = T)
-results_dir = "../results/remote_results/706cb7aa-7891-11e7-b49f-0242ac110002/"
-results_fname = "results.csv"
+results_dir = "../results/remote_results/2ba7c2d6-9402-11e7-b89e-0242ac110002/"#args[1]
+results_fname = "results_all.csv"#args[2]
 results = read.csv(paste0(results_dir, results_fname))
 
 mean_graf = mean(results$graf_cur_auc)
@@ -38,8 +38,8 @@ means = melted %>% group_by(variable) %>% summarise(mean = mean(value), std = sd
 
 
 p2 = ggplot(melted, aes(x=variable)) + 
-  geom_bar(data=means, stat='identity', aes(y=mean, fill=variable))  + 
-  geom_errorbar(data=means, aes(ymin = mean-std, ymax = mean+std), width=0.2, position=position_dodge(0.9)) + 
+  geom_boxplot(aes(y=value, fill=variable))  + 
+  #geom_errorbar(data=means, aes(ymin = mean-std, ymax = mean+std), width=0.2, position=position_dodge(0.9)) + 
   labs(title=sprintf("Algorithm Means (n = %d)", length(unique(melted$species)))) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 
