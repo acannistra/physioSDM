@@ -1,5 +1,6 @@
-suppressPackageStartupMessages({
+  suppressPackageStartupMessages({
   library(raster)
+  library(futile.logger)
 })
 
 ## Physiology in Species Distribution Models
@@ -13,11 +14,17 @@ suppressPackageStartupMessages({
 
 ## extracts biovars for each occurrence from files in worldclimDir (which must end in /).
 
-assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol='decimalLatitude',  lonCol = 'decimalLongitude'){
+assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol='decimalLatitude',  lonCol = 'decimalLongitude', divide=NULL){
   for (biovar in biovars){
     wc_file = getWorldClimFilepath(biovar, worldclimDir)  
     flog.info("\tOpening file %s", wc_file)
     wc_rast = raster(wc_file)
+    if(!is.null(divide)){
+      if(biovar %in% divide){
+        flog.info("\t\tDividing by 10...")
+        wc_rast = wc_rast / 10
+      }
+    }
     occurrences[c(as.character(biovar))] = extract(wc_rast, occurrences[c(lonCol, latCol)])
   }
   
@@ -32,7 +39,8 @@ getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=
     wc_rast = raster(wc_file)
     if(!is.null(divide)){
       if(biovar %in% divide){
-        wc_rast = wc_rast / 10
+        flog.info("\t\tDividing by 10...")
+        wc_rast = wc_rast/10
       }
     }
     names(wc_rast) = as.character(biovar)
@@ -65,4 +73,5 @@ getWorldClimFilepath <- function(biovar, worldclimDir){
   }
   return(filename)
 }
+
 
