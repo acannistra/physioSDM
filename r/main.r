@@ -278,9 +278,10 @@
           width=11, 
           height=8.5, 
           pointsize=9)
-      comparePredictions(c(subset(rastcurrent, 1), rastcurmaxent, subset(rastnoprior, 1), subset(rastwithprior, 1), rastmaxent), 
+      comparePredictions(c(subset(rastnoprior, 1), subset(rastwithprior, 1)), 
                          threshold = NA,
-                         titles=c('current, grafnoprior', 'current, maxent', 'future, grafnoprior', 'future, grafwithprior', 'future, maxent'))
+                         titles=c('Future, No Physiology', 'Future, with Physiology'), 
+                         arrows=FALSE)
       dev.off()
                          #occs = dplyr::rename(all_points,  y = decimalLatitude,  x = decimalLongitude))
       #print(rastpredict)

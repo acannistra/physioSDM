@@ -4,7 +4,7 @@
 {
     "species" : ["sceloporus occidentalis"],// "laudakia stellio", "charina bottae", "chamaeleo dilepis", "chamaeleo hohnelii", "thamnophis ordinoides"],//["rana clamitans", "sceloporus occidentalis", "bufo boreas"], //list of specific species or "all",
     "chunksize" : 2,
-    //"max_occurrences": 3000,
+    //"max_occurrences": 300,
     "time_periods" : ["1970:2009"], //past first, then future. 
     "bioclim_source" : "worldclim",
     //"bioclim_dir" : "/Volumes/Tony Cannistra 4017930916/climate/worldclim/wc2.0_2.5m_bio/",

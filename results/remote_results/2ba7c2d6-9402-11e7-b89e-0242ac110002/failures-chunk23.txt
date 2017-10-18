@@ -1,3 +1,0 @@
-anolis cooki	minimum occurrence threshold not met
-anolis intermedius	minimum occurrence threshold not met
-anolis lionotus	minimum occurrence threshold not met

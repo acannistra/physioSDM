@@ -1,5 +1,0 @@
-liolaemus sp 3	no occurrences.
-liolaemus xanthoviridis	minimum occurrence threshold not met
-phymaturus patagonicus	minimum occurrence threshold not met
-trimeresurus gracilis	minimum occurrence threshold not met
-trimeresurus stejnegeri stejnegeri	no occurrences.

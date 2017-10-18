@@ -1,4 +1,0 @@
-taeniopoda eques	minimum occurrence threshold not met
-hemidiena maori	no occurrences.
-bufo cocifer	model with prior failed to build
-bufo exsul	minimum occurrence threshold not met
