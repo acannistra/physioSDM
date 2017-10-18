@@ -1,9 +1,0 @@
-liolaemus quilmes	minimum occurrence threshold not met
-liolaemus riojanus	no occurrences.
-liolaemus robertmertensi	minimum occurrence threshold not met
-liolaemus rothi	minimum occurrence threshold not met
-liolaemus salinicola	no occurrences.
-liolaemus scapularis	minimum occurrence threshold not met
-liolaemus scrocchi	minimum occurrence threshold not met
-liolaemus sp 1	no occurrences.
-liolaemus sp 2	no occurrences.

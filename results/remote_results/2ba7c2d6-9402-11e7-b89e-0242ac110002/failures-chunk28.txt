@@ -1,7 +1,0 @@
-liolaemus multicolor	minimum occurrence threshold not met
-liolaemus multimaculatus	minimum occurrence threshold not met
-liolaemus nigroroseus	no occurrences.
-liolaemus olongasta	minimum occurrence threshold not met
-liolaemus petrophilus	minimum occurrence threshold not met
-liolaemus poecilochromus	minimum occurrence threshold not met
-liolaemus pseudoanomalus	minimum occurrence threshold not met

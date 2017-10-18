@@ -1,7 +1,0 @@
-hyla rothi	no occurrences.
-hyla rubella	minimum occurrence threshold not met
-hyla squirella	model with prior failed to build
-hyla verreauxi	no occurrences.
-phyllomedusa dacnicolor	no occurrences.
-pseudacris triseriata	model with prior failed to build
-pseudacris triseriata	model with prior failed to build

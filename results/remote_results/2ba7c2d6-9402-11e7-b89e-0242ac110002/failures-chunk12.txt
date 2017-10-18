@@ -1,4 +1,0 @@
-pternohyla fodiens	minimum occurrence threshold not met
-craugastor fleischmanni	minimum occurrence threshold not met
-eleutherodactylus fitzingeri	model with prior failed to build
-engystomops pustulosus	model with prior failed to build

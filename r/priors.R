@@ -19,6 +19,9 @@ suppressPackageStartupMessages({
 ####
 
 buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
+  ## assembles prior function given a type, a dataframe containing 'tmin' and 'tmax' for a single 
+  ## species, and the corresponding covariate column names to which tmin and tmax priors are applied.
+  ## returns a partially-applied function. 
   tmin = as.numeric(physioData[c('tmin')])
   tmax = as.numeric(physioData[c('tmax')])
   
@@ -111,15 +114,15 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
 
 sigmoid.tmax <- function(env, tmax, tmaxEnvCol){
   env = env[,c(tmaxEnvCol)]
-  result = ifelse(env<tmax, 0.5, exp(-(env-tmax)/5)-0.5)
-  result[result <= 0] = 0.01
+  result = ifelse(env<tmax, 0.7, exp(-(env-tmax)/5)-0.7)
+  result[result <= 0] = 0.2
   result[result > 1] = 1
   return(result)
 }
 sigmoid.tmin <- function(env, tmin, tminEnvCol) {
   env = env[,c(tminEnvCol)]
-  result = ifelse(env>tmin, 0.5, 0.5-exp(-(env-(tmin)/99000)))
-  result[result <= 0] = 0.01
+  result = ifelse(env>tmin, 0.7, 0.7-exp(-(env-(tmin)/99000)))
+  result[result <= 0] = 0.2
   result[result > 1] = 1
   return(result)
 }

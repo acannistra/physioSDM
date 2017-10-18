@@ -1,8 +1,0 @@
-hyla freycineti	no occurrences.
-hyla glauerti	no occurrences.
-hyla gracilenta	no occurrences.
-hyla labialis	minimum occurrence threshold not met
-hyla lesueuri	no occurrences.
-hyla peroni	no occurrences.
-hyla phaeota	no occurrences.
-hyla phyllochroa	minimum occurrence threshold not met
