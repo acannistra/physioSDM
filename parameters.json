@@ -8,8 +8,8 @@
     "time_periods" : ["1970:2009"], //past first, then future. 
     "bioclim_source" : "worldclim",
     //"bioclim_dir" : "/Volumes/Tony Cannistra 4017930916/climate/worldclim/wc2.0_2.5m_bio/",
-    "bioclim_dir" : "/Volumes/Backup/climate/current/",
-    "future_bioclim_dir" : "/Volumes/Backup/climate/future/HD-60/",
+    "bioclim_dir" : "/Volumes/wrangell-st-elias/research/climate/current/",
+    "future_bioclim_dir" : "/Volumes/wrangell-st-elias/research/climate/future/HD-60/",
     "biovars" : ["bio1", "bio3", "bio5", "bio6", "bio7", "bio12", "bio15"],
     "prior_type" : "sigmoid",
     "phys_datafile" : "/Users/tony/Dropbox/Projects/UW/physdm/data/physiology/Sundayetal_thermallimits_PNAS_2014.csv",
