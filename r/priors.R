@@ -135,9 +135,9 @@ sigmoid.range = function(env, tmax, tmin, tmaxEnvCol, tminEnvCol){
     tmax_e_value = row[c(tmaxEnvCol)]
     if (is.na(tmin_e_value) || is.na(tmax_e_value)){
       result = c(result, NA)
-    } else if (tmin_e_value < tmin + 10){
+    } else if (tmin_e_value < tmin){
       result = c(result, gensigmoid(tmin_e_value, 0.5, 0.1, 5.5, 2.5, tmin))
-    } else if (tmax_e_value > tmax - 10){
+    } else if (tmax_e_value > tmax){
       result = c(result, gensigmoid(tmax_e_value, 0.1, 0.5, 5.5, 2.5, tmax))
     } else{
       result = c(result, 0.5)
