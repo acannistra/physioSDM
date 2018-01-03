@@ -11,11 +11,15 @@ suppressPackageStartupMessages({
 #### GBIF Data Extraction:
 ####
 GBIFOccurrences = function(taxon, minyear=NA, maxyear=NA, limit=10000) {
+  # downloads <limit> occurrences of <taxon> from GBIF during [minyear,maxyear].
+  
   flog.info("searching GBIF for occurrences for species %s...", taxon)
   if (is.na(minyear) & is.na(maxyear)) {
+    # search for all occurences if no date range given
     occs = occ_search(scientificName = taxon, hasCoordinate = T, limit = limit)
   } 
   else {
+    # search for all occurrences during date range.
     occs = occ_search(scientificName = taxon,
                       hasCoordinate = T, 
                       limit = limit,
