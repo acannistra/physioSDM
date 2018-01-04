@@ -1,4 +1,4 @@
-  suppressPackageStartupMessages({
+suppressPackageStartupMessages({
   library(raster)
   library(futile.logger)
 })
@@ -7,20 +7,26 @@
 ## Tony Cannistra & Lauren Buckley, 2017
 ## ~ Climate Data Helper Functions
 
+SCALED_BIOVARS = c("bio1", 
+                  "bio2", 
+                  "bio5", 
+                  "bio6", 
+                  "bio7", 
+                  "bio8", 
+                  "bio9", 
+                  "bio10", 
+                  "bio11")
 
-####
 #### Convenience wrappers
-####
 
 ## extracts biovars for each occurrence from files in worldclimDir (which must end in /).
-
-assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol='decimalLatitude',  lonCol = 'decimalLongitude', divide=NULL){
+assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol='decimalLatitude',  lonCol = 'decimalLongitude', divide=TRUE){
   for (biovar in biovars){
     wc_file = getWorldClimFilepath(biovar, worldclimDir)  
     flog.info("\tOpening file %s", wc_file)
     wc_rast = raster(wc_file)
-    if(!is.null(divide)){
-      if(biovar %in% divide){
+    if(divide){
+      if(biovar %in% SCALED_BIOVARS){
         flog.info("\t\tDividing by 10...")
         wc_rast = wc_rast / 10
       }
@@ -31,14 +37,15 @@ assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol
   return(occurrences)
 }
 
-getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=NULL){
+# extract biovars from files in worldclimDir for given extent. 
+getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=TRUE){
   brick = stack()
   for(biovar in biovars){
     wc_file = getWorldClimFilepath(biovar, worldclimDir)
     flog.info("\tOpening file %s", wc_file)
     wc_rast = raster(wc_file)
-    if(!is.null(divide)){
-      if(biovar %in% divide){
+    if(divide){
+      if(biovar %in% SCALED_BIOVARS){
         flog.info("\t\tDividing by 10...")
         wc_rast = wc_rast/10
       }
@@ -52,10 +59,10 @@ getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=
   }
   return(brick)
 }
-####
-#### WorldClim/BioCLIM accessors 
-####
 
+#### WorldClim/BioCLIM accessors 
+
+# get data filepath for biovar in worldclimDir
 getWorldClimFilepath <- function(biovar, worldclimDir){
   if(!endsWith(worldclimDir, "/")) {
     stop(flog.error("worldclimDir needs to end with '/' character"))

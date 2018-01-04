@@ -18,6 +18,11 @@ suppressPackageStartupMessages({
 #### known physiological data. 
 ####
 
+gensigmoid <- function(x, low, high, rate, v, origin) {
+  # [Generalized Sigmoid function.](https://en.wikipedia.org/wiki/Generalised_logistic_function)
+  return(low + ((high-low)/(1+(rate*exp((x-origin))))^(1/v)))
+}
+
 buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
   ## assembles prior function given a type, a dataframe containing 'tmin' and 'tmax' for a single 
   ## species, and the corresponding covariate column names to which tmin and tmax priors are applied.
@@ -34,9 +39,9 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
       ## we've got both tmin and tmax
       flog.info("\tBoth tmin and tmax present.")
       if(physioData[c('tmin_metric')] == 'crit' && physioData[c('tmax_metric')] == 'crit'){ ## both critical
-        return(partial(sigmoid.neutralZone, 
+        return(partial(sigmoid.range, 
                        tminEnvCol=tminEnvCol, tmaxEnvCol=tmaxEnvCol, 
-                       neutralMin=tmin, neutralMax=tmax))
+                       tmin=tmin, tmax=tmax))
       } else if (physioData[c('tmin_metric')] != 'crit' &&physioData[c('tmax_metric')] == 'crit') {
         ## tmin is lethal, but tmax is critical, only tmax:
         flog.info("Only tmax used (tmin lethal).")
@@ -114,22 +119,31 @@ buildPrior <- function(type, physioData, tminEnvCol='bio1', tmaxEnvCol='bio1'){
 
 sigmoid.tmax <- function(env, tmax, tmaxEnvCol){
   env = env[,c(tmaxEnvCol)]
-  result = ifelse(env<tmax, 0.7, exp(-(env-tmax)/5)-0.7)
-  result[result <= 0] = 0.2
-  result[result > 1] = 1
+  result = ifelse(env<tmax, 0.5, gensigmoid(env, 0.1, 0.5, 5.5, 2.5, tmax))
   return(result)
 }
 sigmoid.tmin <- function(env, tmin, tminEnvCol) {
   env = env[,c(tminEnvCol)]
-  result = ifelse(env>tmin, 0.7, 0.7-exp(-(env-(tmin)/99000)))
-  result[result <= 0] = 0.2
-  result[result > 1] = 1
+  result = ifelse(env>tmin, 0.5, gensigmoid(env, 0.5, 0.1, 5.5, 2.5, tmin))
   return(result)
 }
-sigmoid.neutralZone <- function(env, tminEnvCol, tmaxEnvCol, neutralMin, neutralMax){
-  tmin_prb = sigmoid.tmin(env, neutralMin, tminEnvCol)
-  tmax_prb = sigmoid.tmax(env, neutralMax, tmaxEnvCol)
-  return(tmin_prb*tmax_prb)
+sigmoid.range = function(env, tmax, tmin, tmaxEnvCol, tminEnvCol){
+  result = c()
+  
+  evaluate_row = function(row){
+    tmin_e_value = row[c(tminEnvCol)]
+    tmax_e_value = row[c(tmaxEnvCol)]
+    if (is.na(tmin_e_value) || is.na(tmax_e_value)){
+      result = c(result, NA)
+    } else if (tmin_e_value < tmin){
+      result = c(result, gensigmoid(tmin_e_value, 0.5, 0.1, 5.5, 2.5, tmin))
+    } else if (tmax_e_value > tmax){
+      result = c(result, gensigmoid(tmax_e_value, 0.1, 0.5, 5.5, 2.5, tmax))
+    } else{
+      result = c(result, 0.5)
+    }
+  }
+  apply(env, 1, evaluate_row)
 }
 
 ####
