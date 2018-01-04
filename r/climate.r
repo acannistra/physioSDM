@@ -1,8 +1,7 @@
-  suppressPackageStartupMessages({
+suppressPackageStartupMessages({
   library(raster)
   library(futile.logger)
 })
-
 
 ## Physiology in Species Distribution Models
 ## Tony Cannistra & Lauren Buckley, 2017
@@ -18,12 +17,9 @@ SCALED_BIOVARS = c("bio1",
                   "bio10", 
                   "bio11")
 
-####
 #### Convenience wrappers
-####
 
 ## extracts biovars for each occurrence from files in worldclimDir (which must end in /).
-
 assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol='decimalLatitude',  lonCol = 'decimalLongitude', divide=TRUE){
   for (biovar in biovars){
     wc_file = getWorldClimFilepath(biovar, worldclimDir)  
@@ -41,6 +37,7 @@ assignPointData_worldclim <- function(occurrences, biovars, worldclimDir, latCol
   return(occurrences)
 }
 
+# extract biovars from files in worldclimDir for given extent. 
 getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=TRUE){
   brick = stack()
   for(biovar in biovars){
@@ -62,10 +59,10 @@ getRasterStack_worldclim <- function(biovars, worldclimDir, extent=NULL, divide=
   }
   return(brick)
 }
-####
-#### WorldClim/BioCLIM accessors 
-####
 
+#### WorldClim/BioCLIM accessors 
+
+# get data filepath for biovar in worldclimDir
 getWorldClimFilepath <- function(biovar, worldclimDir){
   if(!endsWith(worldclimDir, "/")) {
     stop(flog.error("worldclimDir needs to end with '/' character"))
