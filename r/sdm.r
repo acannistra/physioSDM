@@ -10,10 +10,10 @@ suppressPackageStartupMessages({
 ## SDM Helper Functions
 
 
-####
 #### Model Building Utilities
-####
 
+# create GRAF SDM model instance from dataframe of presence/absence occurrence
+# information with covariates at each point. optional optimiziation (opt) and prior 
 buildSDM <- function(climPresAbs, opt=F, prior=NULL){
   labels = climPresAbs$presence
   covs   = dplyr::select(climPresAbs, -c(presence))
@@ -36,15 +36,18 @@ buildSDM <- function(climPresAbs, opt=F, prior=NULL){
   return(model)
 }
 
+# Train MaxEnt model from dataframe of presence/absence occurrence
+# information with covariates at each point
 buildMaxEnt <-function(climPresAbs){
   labels = climPresAbs$presence
   covs   = dplyr::select(climPresAbs, -c(presence))
   return(maxent(covs, labels))
 }
 
-####
+
 #### training and testing utilities
-####
+
+# create training/test data split.
 trainTestSplit <- function(occurrences, trainFraction=0.75){
   split = list()
   indices = createDataPartition(1:nrow(occurrences), p=trainFraction)$Resample1
@@ -53,10 +56,9 @@ trainTestSplit <- function(occurrences, trainFraction=0.75){
   return(split) 
 }
 
-####
 #### Model Evaluation Functions
-####
 
+# compute AUC and ROC for a given GRAF model, covariates, and presence/absence labels.
 graf_auc_roc = function(model, test_covs, test_labels){
   results = list()
   prob = data.frame(predict(model, test_covs))
@@ -70,6 +72,7 @@ graf_auc_roc = function(model, test_covs, test_labels){
   return(results)
 }
 
+# compute AUC and ROC for a given MaxEnt model, covariates, and presence/absence labels
 maxent_auc_roc = function(model, test_covs, test_labels){
   results = list()
   prob = data.frame(predict(model, test_covs))
