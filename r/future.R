@@ -6,12 +6,14 @@ suppressPackageStartupMessages({
   library(plyr)
 })
 
+# compute geogcraphically consistent clumps above threshold 
 getClumps <- function(predictionRaster, threshold=0.5){
   predictionRaster[predictionRaster >= threshold] = 1
   predictionRaster[predictionRaster < threshold] = NA
   return(clump(predictionRaster, directions=4))
 }
 
+# find ID of largest clump (most cells)
 largestClumpId <- function(clumps, threshold=20){
   #get number of cells in eeach clump
   freqs <- as.data.frame(freq(clumps, useNA = 'no'))
@@ -19,6 +21,7 @@ largestClumpId <- function(clumps, threshold=20){
   return(freqs[which(freqs$count == max(freqs$count)),]$value)
 }
   
+# produce a plot of all clumps, given raster with clumps
 plotClumps <- function(rc){
   clump_id <- getValues(rc)    
   xy <- xyFromCell(rc,1:ncell(rc))
@@ -29,6 +32,7 @@ plotClumps <- function(rc){
   text(dfm[, 2:3], labels = dfm$clump_id)
 }
 
+# Plot several predictions given list of raster predictions.
 comparePredictions <- function(predictions, threshold=0.5, titles=NA, occs=NA, verbose=FALSE, 
                                fullresult=FALSE, arrows=TRUE){
   npreds = length(predictions)
